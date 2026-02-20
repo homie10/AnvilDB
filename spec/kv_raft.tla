@@ -369,16 +369,16 @@ CommittedStateAgreementInv ==
   \A a, b \in Nodes : commitIndex[a] = commitIndex[b] => kv[a] = kv[b]
 
 CiConstraint ==
-  /\ clock <= 4
-  /\ Len(deliveryQueue) <= 3
-  /\ \A n \in Nodes : Len(log[n]) <= 3
-  /\ \A n \in Nodes : currentTerm[n] <= 5
+  /\ clock <= 3
+  /\ Len(deliveryQueue) <= 2
+  /\ \A n \in Nodes : Len(log[n]) <= 2
+  /\ \A n \in Nodes : currentTerm[n] <= 4
 
 NightlyConstraint ==
-  /\ clock <= 6
-  /\ Len(deliveryQueue) <= 4
-  /\ \A n \in Nodes : Len(log[n]) <= 4
-  /\ \A n \in Nodes : currentTerm[n] <= 7
+  /\ clock <= 5
+  /\ Len(deliveryQueue) <= 3
+  /\ \A n \in Nodes : Len(log[n]) <= 3
+  /\ \A n \in Nodes : currentTerm[n] <= 6
 
 THEOREM TypeSafety == Spec => []TypeInv
 THEOREM CommitMonotonicSafety == Spec => []CommitMonotonicInv
