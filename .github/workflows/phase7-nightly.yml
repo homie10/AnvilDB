@@ -44,9 +44,12 @@ jobs:
             fi
           done
           test -s tla2tools.jar
-      - name: Phase 7 TLC model check (higher bounds)
+      - name: Phase 7 TLC model exploration (nightly simulation)
         run: |
-          timeout 600s java -XX:+UseSerialGC -Xmx3g -cp tla2tools.jar tlc2.TLC \
-            -deadlock -workers 2 \
-            -config spec/kv_raft_nightly.cfg \
-            spec/kv_raft.tla
+          set -euo pipefail
+          for seed in 11011 12648430 3735928559 195948557; do
+            timeout 150s java -XX:+UseSerialGC -Xmx3g -cp tla2tools.jar tlc2.TLC \
+              -deadlock -simulate -depth 140 -seed "${seed}" -workers 2 \
+              -config spec/kv_raft_nightly.cfg \
+              spec/kv_raft.tla
+          done
