@@ -366,6 +366,18 @@ CommittedLogMatchingInv ==
 CommittedStateAgreementInv ==
   \A a, b \in Nodes : commitIndex[a] = commitIndex[b] => kv[a] = kv[b]
 
+CiConstraint ==
+  /\ clock <= 4
+  /\ Len(deliveryQueue) <= 3
+  /\ \A n \in Nodes : Len(log[n]) <= 3
+  /\ \A n \in Nodes : currentTerm[n] <= 5
+
+NightlyConstraint ==
+  /\ clock <= 6
+  /\ Len(deliveryQueue) <= 4
+  /\ \A n \in Nodes : Len(log[n]) <= 4
+  /\ \A n \in Nodes : currentTerm[n] <= 7
+
 THEOREM TypeSafety == Spec => []TypeInv
 THEOREM CommitMonotonicSafety == Spec => []CommitMonotonicInv
 THEOREM ElectionCommitLinkSafety == Spec => []ElectionCommitLinkInv
