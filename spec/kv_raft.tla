@@ -12,7 +12,7 @@ EXTENDS Naturals, Sequences, FiniteSets
 
 CONSTANTS Nodes, Keys, Values
 
-NoVote == CHOOSE x : x \notin Nodes
+NoVote == "no_vote"
 Roles == {"leader", "follower", "candidate"}
 Quorum == (Cardinality(Nodes) \div 2) + 1
 
@@ -118,7 +118,7 @@ LeaderAppendPut(k, v) ==
   /\ LET nextIdx == Len(log[leader]) + 1
          entry == [idx |-> nextIdx, term |-> currentTerm[leader], cmd |-> [op |-> "put", key |-> k, val |-> v]]
          newLeaderLog == Append(log[leader], entry)
-         newLeaderCommit == nextIdx
+         newLeaderCommit == commitIndex[leader]
      IN
        /\ log' = [log EXCEPT ![leader] = newLeaderLog]
        /\ commitIndex' = [commitIndex EXCEPT ![leader] = newLeaderCommit]
@@ -133,7 +133,7 @@ LeaderAppendDelete(k) ==
   /\ LET nextIdx == Len(log[leader]) + 1
          entry == [idx |-> nextIdx, term |-> currentTerm[leader], cmd |-> [op |-> "delete", key |-> k, val |-> ""]]
          newLeaderLog == Append(log[leader], entry)
-         newLeaderCommit == nextIdx
+         newLeaderCommit == commitIndex[leader]
      IN
        /\ log' = [log EXCEPT ![leader] = newLeaderLog]
        /\ commitIndex' = [commitIndex EXCEPT ![leader] = newLeaderCommit]
@@ -286,10 +286,16 @@ DeliverAppend(msgIdx) ==
                   msg.prevIdx = 0
                   \/ (msg.prevIdx <= Len(log[msg.to])
                       /\ log[msg.to][msg.prevIdx].term = msg.prevTerm)
-                newFollowerLog ==
+                proposedFollowerLog ==
                   IF prevMatches
-                  THEN Prefix(log[msg.to], msg.prevIdx) \o msg.entries
+                  THEN IF Len(msg.entries) = 0
+                       THEN log[msg.to]
+                       ELSE Prefix(log[msg.to], msg.prevIdx) \o msg.entries
                   ELSE log[msg.to]
+                newFollowerLog ==
+                  IF Len(proposedFollowerLog) < commitIndex[msg.to]
+                  THEN log[msg.to]
+                  ELSE proposedFollowerLog
                 msgCommit == ClampCommit(msg.leaderCommit, newFollowerLog)
                 newFollowerCommit ==
                   IF prevMatches
@@ -365,6 +371,19 @@ CommittedLogMatchingInv ==
 
 CommittedStateAgreementInv ==
   \A a, b \in Nodes : commitIndex[a] = commitIndex[b] => kv[a] = kv[b]
+
+CiConstraint ==
+  /\ clock <= 1
+  /\ Len(deliveryQueue) = 0
+  /\ \A n \in Nodes : Len(log[n]) <= 1
+  /\ \A n \in Nodes : currentTerm[n] <= 2
+  /\ \A n \in Nodes : electionElapsed[n] <= 2
+
+NightlyConstraint ==
+  /\ clock <= 5
+  /\ Len(deliveryQueue) <= 3
+  /\ \A n \in Nodes : Len(log[n]) <= 3
+  /\ \A n \in Nodes : currentTerm[n] <= 6
 
 THEOREM TypeSafety == Spec => []TypeInv
 THEOREM CommitMonotonicSafety == Spec => []CommitMonotonicInv
