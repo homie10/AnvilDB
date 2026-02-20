@@ -698,19 +698,29 @@ fn cleanup_dir(path: &Path) {
     let _ = fs::remove_dir_all(path);
 }
 
-#[test]
-fn phase7_chaos_harness_preserves_invariants_and_converges() {
-    let seeds = [0xA11CE_u64, 0xC0FFEE_u64, 0xDEADBEEF_u64];
-
+fn run_randomized_chaos_suite(seeds: &[u64], steps: usize) {
     for seed in seeds {
-        let mut harness = Phase7Harness::new(seed, &format!("seed-{seed}"));
-        harness.run_steps(220);
+        let mut harness = Phase7Harness::new(*seed, &format!("seed-{seed}"));
+        harness.run_steps(steps);
         harness.finalize_and_assert_convergence();
 
         let wal_dir = harness.wal_dir.clone();
         drop(harness);
         cleanup_dir(&wal_dir);
     }
+}
+
+#[test]
+fn phase7_chaos_harness_preserves_invariants_and_converges() {
+    let seeds = [0xA11CE_u64, 0xC0FFEE_u64, 0xDEADBEEF_u64];
+    run_randomized_chaos_suite(&seeds, 220);
+}
+
+#[test]
+#[ignore = "nightly higher-bounds chaos suite"]
+fn phase7_chaos_harness_higher_bounds_nightly() {
+    let seeds = [0xA11CE_u64, 0xC0FFEE_u64, 0xDEADBEEF_u64];
+    run_randomized_chaos_suite(&seeds, 420);
 }
 
 #[test]

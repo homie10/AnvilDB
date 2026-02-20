@@ -6,7 +6,7 @@ Build a correctness-first distributed database with a formally modeled control p
 
 ## Current status (as of 2026-02-20)
 
-- Stage: **Phase 7 verification expansion complete (model + CI gate in place)**
+- Stage: **Phase 7 verification expansion complete (model + CI/nightly gates in place)**
 - Working baseline:
   - Multi-crate Rust workspace (`db-core`, `db-storage`, `db-raft`, `server`)
   - In-memory command log + state machine
@@ -40,6 +40,7 @@ Build a correctness-first distributed database with a formally modeled control p
   - Invariant guards for commit monotonicity, term monotonicity, and commit-index/log-bounds safety
   - Expanded TLA+ fault model with delayed AppendEntries delivery queue and partition/drop/crash transitions
   - CI workflow gate for Phase 7 checks (deterministic chaos test + bounded TLC invariant run)
+  - Nightly higher-bounds verification workflow (expanded chaos seeds/steps + higher-bounds TLC config)
   - Byte-wire gRPC interoperability/conformance tests for chunked request handling and corruption/truncation rejection
 
 ## Milestones
@@ -117,6 +118,7 @@ Build a correctness-first distributed database with a formally modeled control p
 - Delivered expansion: generalized deferred fault scheduler with scripted election/snapshot/restart scenarios
 - Delivered expansion: byte-wire gRPC round-trip path and lease hardening coverage for stale leader and clock-regression edges
 - Delivered expansion: byte-wire conformance checks for fragmented payload streams and malformed payload rejection paths
+- Delivered expansion: nightly higher-bounds verification workflow for chaos harness depth and TLC search-space exploration
 
 ## Definition of done for the next checkpoint (Phase 7 kickoff slice)
 
@@ -127,4 +129,4 @@ Build a correctness-first distributed database with a formally modeled control p
 - Done: Expanded TLA+ model with delayed-delivery/partition/drop/crash transitions and richer committed-prefix invariants
 - Done: CI-gated verification loop for Phase 7 (`phase7_chaos` + TLC model check)
 - Done: Production-oriented wire conformance coverage over byte-wire gRPC path (fragmented/chunked and malformed payload cases)
-- Next: Increase nightly model/fault bounds and add deployment-facing network integration guidance
+- Next: Add deployment-facing network integration guidance and expand workload-level correctness benchmarks

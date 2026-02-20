@@ -50,8 +50,7 @@ make run
 
 ## Planned next scope
 
-1. Run higher-bounds/nightly model and chaos suites for deeper fault-space exploration
-2. Add operational deployment/testing guidance for real network integration
-3. Expand workload-level correctness benchmarks for SQL + MVCC behavior under faults
+1. Add operational deployment/testing guidance for real network integration
+2. Expand workload-level correctness benchmarks for SQL + MVCC behavior under faults
 
 See `docs/ROADMAP.md`, `docs/ARCHITECTURE.md`, and `spec/kv_raft.tla`.
