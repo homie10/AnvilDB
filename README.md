@@ -1,6 +1,6 @@
 # AnvilDB
 
-A long-horizon build for a formally-informed distributed database.
+A correctness-first distributed database with a formally modeled control plane, deterministic storage semantics, and fault-oriented validation.
 
 This repository starts with a deliberately small vertical slice:
 - In-memory log and state machine
