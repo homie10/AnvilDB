@@ -12,7 +12,7 @@ EXTENDS Naturals, Sequences, FiniteSets
 
 CONSTANTS Nodes, Keys, Values
 
-NoVote == CHOOSE x : x \notin Nodes
+NoVote == "no_vote"
 Roles == {"leader", "follower", "candidate"}
 Quorum == (Cardinality(Nodes) \div 2) + 1
 
