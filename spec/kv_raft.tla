@@ -118,7 +118,7 @@ LeaderAppendPut(k, v) ==
   /\ LET nextIdx == Len(log[leader]) + 1
          entry == [idx |-> nextIdx, term |-> currentTerm[leader], cmd |-> [op |-> "put", key |-> k, val |-> v]]
          newLeaderLog == Append(log[leader], entry)
-         newLeaderCommit == nextIdx
+         newLeaderCommit == commitIndex[leader]
      IN
        /\ log' = [log EXCEPT ![leader] = newLeaderLog]
        /\ commitIndex' = [commitIndex EXCEPT ![leader] = newLeaderCommit]
@@ -133,7 +133,7 @@ LeaderAppendDelete(k) ==
   /\ LET nextIdx == Len(log[leader]) + 1
          entry == [idx |-> nextIdx, term |-> currentTerm[leader], cmd |-> [op |-> "delete", key |-> k, val |-> ""]]
          newLeaderLog == Append(log[leader], entry)
-         newLeaderCommit == nextIdx
+         newLeaderCommit == commitIndex[leader]
      IN
        /\ log' = [log EXCEPT ![leader] = newLeaderLog]
        /\ commitIndex' = [commitIndex EXCEPT ![leader] = newLeaderCommit]
