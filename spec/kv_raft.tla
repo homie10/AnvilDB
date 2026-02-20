@@ -288,7 +288,9 @@ DeliverAppend(msgIdx) ==
                       /\ log[msg.to][msg.prevIdx].term = msg.prevTerm)
                 newFollowerLog ==
                   IF prevMatches
-                  THEN Prefix(log[msg.to], msg.prevIdx) \o msg.entries
+                  THEN IF Len(msg.entries) = 0
+                       THEN log[msg.to]
+                       ELSE Prefix(log[msg.to], msg.prevIdx) \o msg.entries
                   ELSE log[msg.to]
                 msgCommit == ClampCommit(msg.leaderCommit, newFollowerLog)
                 newFollowerCommit ==
