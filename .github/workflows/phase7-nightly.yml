@@ -48,8 +48,8 @@ jobs:
         run: |
           set -euo pipefail
           for seed in 11011 12648430 3735928559 195948557; do
-            timeout 150s java -XX:+UseSerialGC -Xmx3g -cp tla2tools.jar tlc2.TLC \
-              -deadlock -simulate -depth 140 -seed "${seed}" -workers 2 \
+            timeout 180s java -XX:+UseSerialGC -Xmx3g -cp tla2tools.jar tlc2.TLC \
+              -deadlock -simulate num=240 -depth 140 -seed "${seed}" -workers 2 \
               -config spec/kv_raft_nightly.cfg \
               spec/kv_raft.tla
           done
