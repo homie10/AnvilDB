@@ -1,0 +1,15 @@
+[workspace]
+members = [
+  "crates/core",
+  "crates/storage",
+  "crates/raft",
+  "crates/sql",
+  "crates/server",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+authors = ["AnvilDB Contributors"]

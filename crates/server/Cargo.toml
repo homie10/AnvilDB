@@ -1,0 +1,11 @@
+[package]
+name = "server"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+db-core = { path = "../core" }
+db-raft = { path = "../raft" }
+db-sql = { path = "../sql" }

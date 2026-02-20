@@ -1,0 +1,10 @@
+[package]
+name = "db-raft"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+db-core = { path = "../core" }
+db-storage = { path = "../storage" }

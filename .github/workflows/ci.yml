@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: fmt
+        run: cargo fmt --all -- --check
+      - name: clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: test
+        run: cargo test --workspace
+
+  phase7-verification:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Phase 7 chaos harness
+        run: cargo test -p db-raft --test phase7_chaos
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Download TLA+ tools
+        run: |
+          set -euo pipefail
+          for url in \
+            https://github.com/tlaplus/tlaplus/releases/latest/download/tla2tools.jar \
+            https://github.com/tlaplus/tlaplus/releases/download/v1.8.0/tla2tools.jar
+          do
+            if curl -fsSL "$url" -o tla2tools.jar; then
+              break
+            fi
+          done
+          test -s tla2tools.jar
+      - name: Phase 7 TLC model check
+        run: |
+          timeout 180s java -XX:+UseSerialGC -Xmx2g -cp tla2tools.jar tlc2.TLC \
+            -deadlock -workers 2 \
+            -config spec/kv_raft_ci.cfg \
+            spec/kv_raft.tla
