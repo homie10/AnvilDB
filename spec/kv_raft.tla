@@ -373,10 +373,10 @@ CommittedStateAgreementInv ==
   \A a, b \in Nodes : commitIndex[a] = commitIndex[b] => kv[a] = kv[b]
 
 CiConstraint ==
-  /\ clock <= 3
-  /\ Len(deliveryQueue) <= 2
-  /\ \A n \in Nodes : Len(log[n]) <= 2
-  /\ \A n \in Nodes : currentTerm[n] <= 4
+  /\ clock <= 2
+  /\ Len(deliveryQueue) <= 1
+  /\ \A n \in Nodes : Len(log[n]) <= 1
+  /\ \A n \in Nodes : currentTerm[n] <= 3
 
 NightlyConstraint ==
   /\ clock <= 5
