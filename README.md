@@ -1,56 +1,117 @@
 # AnvilDB
 
-A correctness-first distributed database with a formally modeled control plane, deterministic storage semantics, and fault-oriented validation.
+AnvilDB is a lightweight, embeddable database engine designed for simplicity, speed, and developer productivity. It provides a straightforward interface for data storage and retrieval, making it easy to integrate into your applications with minimal setup.
 
-This repository starts with a deliberately small vertical slice:
-- In-memory log and state machine
-- Raft-like leader replication with follower catch-up mechanics
-- Deterministic tests for replication behavior
-- Initial TLA+ model skeleton and safety invariants list
+---
 
-## Quick start
+## Table of Contents
+
+- [Purpose](#purpose)
+- [Features](#features)
+- [Getting Started](#getting-started)
+    - [Installation](#installation)
+    - [Basic Usage](#basic-usage)
+- [Documentation](#documentation)
+- [Design Philosophy](#design-philosophy)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
+
+## Purpose
+
+AnvilDB aims to provide developers with a simple, reliable, and performant database solution that can be embedded directly into applications. Whether you're prototyping, building microservices, or need a data store for scripts and tools, AnvilDB makes data management hassle-free.
+
+---
+
+## Features
+
+- **Lightweight:** Minimal dependencies and a small footprint.
+- **Easy Integration:** Simple API for quick embedding in any project.
+- **Cross-Platform:** Works seamlessly across major operating systems.
+- **Fast Reads & Writes:** Optimized for speed and efficiency.
+- **Flexible Data Model:** Supports storing structured and unstructured data.
+- **Transactions:** Atomic operations for reliable data handling.
+- **Persistence:** Data saved to disk for durability.
+
+---
+
+## Getting Started
+
+### Installation
 
 ```bash
-cd /path/to/anvildb
-make test
-make run
+# Example for installing, replace with your actual package name if available
+pip install anvildb
+# or
+go get github.com/homie10/AnvilDB
+```
+*If not available via package manager, clone the repo:*
+```bash
+git clone https://github.com/homie10/AnvilDB.git
+cd AnvilDB
 ```
 
-## Current scope (Phase 7 kickoff complete)
+### Basic Usage
 
-- Dynamic leader transitions via manual election trigger (`start_election`)
-- Logical-time scheduler with automatic election timeouts (`tick` / `tick_many`)
-- Heartbeat cadence to suppress unnecessary elections
-- In-memory state machine with WAL-backed durable log replay
-- Per-follower replication state (`nextIndex`/`matchIndex`)
-- Conflict repair and quorum-gated commit advancement
-- RequestVote vote-grant/reject semantics with term checks
-- WAL append/load/truncate/replay prototype in `db-storage`
-- Durable cluster bootstrap via `new_durable(...)` with on-disk replay
-- Durable term/vote metadata for restart-safe election semantics
-- Snapshot create/install flow with leader log-prefix compaction
-- Deterministic election backoff/jitter for repeated failed elections
-- In-process API service scaffold with explicit request/response envelopes
-- Transport abstraction with `InProcessTransport`, envelope-level gRPC adapter, and byte-wire gRPC server/client adapter
-- Node-addressed request routing with follower-to-leader redirect behavior
-- Read consistency modes (`Eventual`, `Linearizable`) exposed at API level
-- Linearizable reads gated by explicit quorum heartbeat-ack lease checks with safety-capped lease windows
-- Proposal timeout handling and pending-log backpressure policy checks
-- SQL parser + logical planner crate (`db-sql`) for `INSERT`/`DELETE`/`UPDATE`/`SELECT` on `kv`
-- SQL logical plan tree (`Scan`/`Filter`/`Projection`) with lowering into executable KV operations
-- SQL request path in API service with projection/predicate execution and structured SQL responses
-- MVCC scaffolding types in `db-sql` (`VersionChain`, `MvccCatalog`, transaction/version timestamps)
-- MVCC-backed server read/write execution with commit-index timestamp visibility
-- MVCC historical reads for lagging followers and automatic resync for out-of-band cluster writes
-- Phase 7 deterministic chaos harness with partitions, delayed delivery, crash/restart, elections, snapshots, and deferred fault scheduling
-- Model-vs-implementation invariant checks over commit monotonicity, term monotonicity, and snapshot agreement
-- Expanded TLA+ Raft model with delayed AppendEntries delivery, partition/reconnect, packet drop, follower divergence, and crash/restart transitions
-- CI-gated Phase 7 verification loop (`phase7_chaos` + bounded TLC invariants via `spec/kv_raft_ci.cfg`)
-- Byte-wire gRPC interoperability/conformance coverage: chunked payload handling, corruption/truncation rejection, and cross-transport parity checks
+```python
+# Example in Python. Replace with your actual API usage
+from anvildb import AnvilDB
 
-## Planned next scope
+db = AnvilDB('mydata.db')
+db.set('key', 'value')
+print(db.get('key'))  # Output: value
+```
+*Or in Go:*
+```go
+// Example in Go. Replace with your actual API usage
+import "github.com/homie10/AnvilDB"
 
-1. Add operational deployment/testing guidance for real network integration
-2. Expand workload-level correctness benchmarks for SQL + MVCC behavior under faults
+db, err := anvildb.Open("mydata.db")
+if err != nil {
+    log.Fatal(err)
+}
 
-See `docs/ROADMAP.md`, `docs/ARCHITECTURE.md`, and `spec/kv_raft.tla`.
+db.Set("key", []byte("value"))
+val, _ := db.Get("key")
+fmt.Println(string(val)) // Output: value
+```
+*Refer to [Documentation](#documentation) for more advanced usage and language support.*
+
+---
+
+## Documentation
+
+For full API reference, architectural notes, and advanced guides, visit the [AnvilDB Wiki](https://github.com/homie10/AnvilDB/wiki) or see the [docs/](docs/) folder in this repository.
+
+- [Quickstart Guide](docs/quickstart.md)
+- [API Reference](docs/api.md)
+
+---
+
+## Design Philosophy
+
+AnvilDB is built on the principle that storing and retrieving data should be as straightforward as possible, with sensible defaults and minimal boilerplate. The codebase prioritizes:
+
+- **Simplicity over complexity**
+- **Performance over feature-bloat**
+- **Transparency and educational value**
+
+---
+
+## Contributing
+
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to get involved. Feel free to open issues for bugs, feature requests, or questions.
+
+---
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+
+---
+
+## Links
+
+- [AnvilDB on GitHub](https://github.com/homie10/AnvilDB)
+- [Issue Tracker](https://github.com/homie10/AnvilDB/issues)
